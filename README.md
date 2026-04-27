@@ -1,10 +1,10 @@
-🚀 Edge AI-Based Secure Semantic Communication System
+#🚀 Edge AI-Based Secure Semantic Communication System
 
 A real-time Edge AI + Semantic Communication framework designed for low-bandwidth disaster response environments.
 
 Instead of transmitting raw images or video streams, this system performs on-device inference and sends only compact, encrypted semantic data, enabling faster and more reliable communication under constrained network conditions.
 
-🧠 Key Idea
+#🧠 Key Idea
 
 Transmit meaning, not data.
 
