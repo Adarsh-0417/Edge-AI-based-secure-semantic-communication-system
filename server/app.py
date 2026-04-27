@@ -1,9 +1,12 @@
 from flask import Flask, request, jsonify, render_template_string
 from config.crypto_utils import decrypt_data
 from datetime import datetime
+import pytz
 import os
 
 app = Flask(__name__)
+
+IST = pytz.timezone("Asia/Kolkata")
 
 latest_data = {
     "human_detected": False,
@@ -20,13 +23,14 @@ def receive():
     global latest_data
     try:
         encrypted_data = request.data
-
         data = decrypt_data(encrypted_data)
+
+        current_time = datetime.now(IST).strftime("%I:%M:%S %p")
 
         latest_data = {
             "human_detected": data.get("human_detected"),
             "confidence": data.get("confidence"),
-            "timestamp": datetime.now().strftime("%H:%M:%S"),
+            "timestamp": current_time,
             "raw_size": data.get("raw_size"),
             "semantic_size": data.get("semantic_size"),
             "latency": data.get("latency"),
@@ -36,6 +40,7 @@ def receive():
         return jsonify({"status": "ok"})
 
     except Exception as e:
+        print("ERROR:", e)
         return jsonify({"error": str(e)}), 500
 
 
@@ -47,167 +52,178 @@ def latest():
 @app.route("/")
 def dashboard():
     return render_template_string("""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Semantic Disaster Dashboard</title>
-        <style>
-            body {
-                margin: 0;
-                font-family: 'Segoe UI', sans-serif;
-                background: radial-gradient(circle at top, #1e293b, #020617);
-                color: #e2e8f0;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                height: 100vh;
-            }
+<!DOCTYPE html>
+<html>
+<head>
+<title>Edge AI Dashboard</title>
 
-            h1 {
-                margin-bottom: 20px;
-                font-weight: 600;
-            }
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #020617, #0f172a);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+}
 
-            .pulse {
-                width: 12px;
-                height: 12px;
-                border-radius: 50%;
-                background: #22c55e;
-                box-shadow: 0 0 10px #22c55e;
-                animation: pulse 1.5s infinite;
-                margin-bottom: 10px;
-            }
+h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
 
-            @keyframes pulse {
-                0% { transform: scale(1); opacity: 1; }
-                50% { transform: scale(1.5); opacity: 0.5; }
-                100% { transform: scale(1); opacity: 1; }
-            }
+.live {
+    width: 10px;
+    height: 10px;
+    background: #22c55e;
+    border-radius: 50%;
+    box-shadow: 0 0 12px #22c55e;
+    margin-bottom: 20px;
+}
 
-            .card {
-                background: rgba(15, 23, 42, 0.85);
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(148, 163, 184, 0.2);
-                padding: 30px;
-                width: 450px;
-                border-radius: 16px;
-                box-shadow: 0 0 40px rgba(0,0,0,0.7);
-            }
+/* MAIN CARD */
+.container {
+    display: flex;
+    gap: 20px;
+}
 
-            .status {
-                font-size: 32px;
-                font-weight: bold;
-                margin: 10px 0;
-            }
+/* LEFT STATUS */
+.status-card {
+    background: rgba(15,23,42,0.9);
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid #334155;
+    width: 250px;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(0,0,0,0.7);
+}
 
-            .yes {
-                color: #22c55e;
-                text-shadow: 0 0 20px #22c55e;
-            }
+.status-text {
+    font-size: 26px;
+    font-weight: bold;
+    margin-top: 10px;
+}
 
-            .no {
-                color: #ef4444;
-                text-shadow: 0 0 20px #ef4444;
-            }
+.yes {
+    color: #22c55e;
+    text-shadow: 0 0 15px #22c55e;
+}
 
-            .grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 15px;
-                margin-top: 20px;
-            }
+.no {
+    color: #ef4444;
+    text-shadow: 0 0 15px #ef4444;
+}
 
-            .box {
-                background: #020617;
-                border: 1px solid #334155;
-                padding: 12px;
-                border-radius: 10px;
-                font-size: 13px;
-            }
+/* RIGHT GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 180px);
+    gap: 15px;
+}
 
-            .label {
-                color: #94a3b8;
-                font-size: 12px;
-            }
+.box {
+    background: rgba(2,6,23,0.9);
+    border: 1px solid #334155;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
 
-            .value {
-                font-size: 16px;
-                margin-top: 5px;
-            }
-        </style>
-    </head>
+.label {
+    font-size: 12px;
+    color: #94a3b8;
+}
 
-    <body>
+.value {
+    font-size: 16px;
+    margin-top: 5px;
+}
 
-        <h1>Edge AI Semantic Monitoring</h1>
-        <div class="pulse"></div>
+/* Hover effect */
+.box:hover {
+    transform: scale(1.05);
+    transition: 0.2s;
+}
+</style>
+</head>
 
-        <div class="card">
+<body>
 
-            <div>Status</div>
-            <div id="status" class="status">Loading...</div>
+<h1>Edge AI Semantic Monitoring</h1>
+<div class="live"></div>
 
-            <div class="grid">
-                <div class="box">
-                    <div class="label">Confidence</div>
-                    <div id="confidence" class="value"></div>
-                </div>
+<div class="container">
 
-                <div class="box">
-                    <div class="label">Last Update</div>
-                    <div id="timestamp" class="value"></div>
-                </div>
+    <!-- STATUS -->
+    <div class="status-card">
+        <div>Status</div>
+        <div id="status" class="status-text">Loading...</div>
+    </div>
 
-                <div class="box">
-                    <div class="label">System Mode</div>
-                    <div id="mode" class="value"></div>
-                </div>
-
-                <div class="box">
-                    <div class="label">Latency</div>
-                    <div id="latency" class="value"></div>
-                </div>
-
-                <div class="box">
-                    <div class="label">Raw Size</div>
-                    <div id="raw_size" class="value"></div>
-                </div>
-
-                <div class="box">
-                    <div class="label">Semantic Size</div>
-                    <div id="semantic_size" class="value"></div>
-                </div>
-            </div>
-
+    <!-- DATA -->
+    <div class="grid">
+        <div class="box">
+            <div class="label">Confidence</div>
+            <div id="confidence" class="value"></div>
         </div>
 
-    <script>
-        async function fetchData() {
-            const response = await fetch('/latest');
-            const data = await response.json();
+        <div class="box">
+            <div class="label">Last Update</div>
+            <div id="timestamp" class="value"></div>
+        </div>
 
-            const statusEl = document.getElementById('status');
-            statusEl.innerText = data.human_detected ? "HUMAN DETECTED" : "NO HUMAN";
-            statusEl.className = "status " + (data.human_detected ? "yes" : "no");
+        <div class="box">
+            <div class="label">System Mode</div>
+            <div id="mode" class="value"></div>
+        </div>
 
-            document.getElementById('confidence').innerText = data.confidence.toFixed(2);
-            document.getElementById('timestamp').innerText = data.timestamp;
-            document.getElementById('raw_size').innerText = data.raw_size + " bytes";
-            document.getElementById('semantic_size').innerText = data.semantic_size + " bytes";
-            document.getElementById('latency').innerText = data.latency + " sec";
-            document.getElementById('mode').innerText = data.mode;
-        }
+        <div class="box">
+            <div class="label">Latency</div>
+            <div id="latency" class="value"></div>
+        </div>
 
-        setInterval(fetchData, 1000);
-        fetchData();
-    </script>
+        <div class="box">
+            <div class="label">Raw Size</div>
+            <div id="raw_size" class="value"></div>
+        </div>
 
-    </body>
-    </html>
-    """)
+        <div class="box">
+            <div class="label">Semantic Size</div>
+            <div id="semantic_size" class="value"></div>
+        </div>
+    </div>
 
-# 🔥 THIS IS THE ONLY PART YOU WERE ASKING ABOUT
+</div>
+
+<script>
+async function fetchData() {
+    const res = await fetch('/latest');
+    const data = await res.json();
+
+    const statusEl = document.getElementById('status');
+
+    statusEl.innerText = data.human_detected ? "HUMAN DETECTED" : "NO HUMAN";
+    statusEl.className = "status-text " + (data.human_detected ? "yes" : "no");
+
+    document.getElementById('confidence').innerText = data.confidence.toFixed(2);
+    document.getElementById('timestamp').innerText = data.timestamp;
+    document.getElementById('mode').innerText = data.mode;
+    document.getElementById('latency').innerText = data.latency + " sec";
+    document.getElementById('raw_size').innerText = data.raw_size + " bytes";
+    document.getElementById('semantic_size').innerText = data.semantic_size + " bytes";
+}
+
+setInterval(fetchData, 1000);
+fetchData();
+</script>
+
+</body>
+</html>
+""")
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
