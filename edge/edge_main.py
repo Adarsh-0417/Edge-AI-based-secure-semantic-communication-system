@@ -6,7 +6,7 @@ from edge.detection import detect
 from edge.semantic_encoder import create_semantic_packet
 from config.crypto_utils import encrypt_data
 
-SERVER_URL = "https://melodious-rebirth-production.up.railway.app/"
+SERVER_URL = "https://melodious-rebirth-production.up.railway.app/data"
 
 cap = cv2.VideoCapture(0)
 
@@ -72,6 +72,7 @@ while True:
         break
 
     time.sleep(1)
+
 
 cap.release()
 cv2.destroyAllWindows()
