@@ -1,14 +1,15 @@
-# Edge AI Secure Semantic Communication System
+🚀 Edge AI-Based Secure Semantic Communication System
 
-This project demonstrates a simple **Edge AI + Semantic Communication pipeline** for low-bandwidth environments.
+A real-time Edge AI + Semantic Communication framework designed for low-bandwidth disaster response environments.
 
-Instead of sending raw images, the system:
+Instead of transmitting raw images or video streams, this system performs on-device inference and sends only compact, encrypted semantic data, enabling faster and more reliable communication under constrained network conditions.
 
-* detects humans using YOLO (edge side)
-* converts output into a small semantic packet
-* encrypts it using AES
-* sends it to a server
-* displays it on a live dashboard
+🧠 Key Idea
+
+Transmit meaning, not data.
+
+Traditional systems send raw multimedia → high bandwidth → high latency
+This system sends semantic insights → low bandwidth → fast response
 
 ---
 
