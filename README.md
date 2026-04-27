@@ -1,109 +1,31 @@
-# 🚀 Edge AI-Based Secure Semantic Communication System
+# Edge AI Secure Semantic Communication System
 
-A real-time **Edge AI + Semantic Communication framework** designed for **low-bandwidth disaster response environments**.
+This project demonstrates a simple **Edge AI + Semantic Communication pipeline** for low-bandwidth environments.
 
-Instead of transmitting raw images or video streams, this system performs **on-device inference** and sends only **compact, encrypted semantic data**, enabling faster and more reliable communication under constrained network conditions.
+Instead of sending raw images, the system:
 
----
-
-## 🧠 Key Idea
-
-> *Transmit meaning, not data.*
-
-Traditional systems send raw multimedia → high bandwidth → high latency
-This system sends **semantic insights** → low bandwidth → fast response
+* detects humans using YOLO (edge side)
+* converts output into a small semantic packet
+* encrypts it using AES
+* sends it to a server
+* displays it on a live dashboard
 
 ---
 
-## ⚙️ System Architecture
+## 🔧 Project Structure
 
 ```
-Camera (Edge Device)
-        ↓
-YOLOv8 Detection (Edge AI)
-        ↓
-Semantic Encoding (JSON)
-        ↓
-AES Encryption
-        ↓
-HTTP Transmission
-        ↓
-Cloud Server (Flask)
-        ↓
-Real-Time Dashboard
+config/        → encryption + settings
+edge/          → detection + semantic encoding + sender
+server/        → Flask backend + dashboard
+models/        → YOLO model
 ```
 
 ---
 
-## ✨ Features
+## ⚙️ Requirements
 
-* 🔍 Real-time **human detection** using YOLOv8
-* 🧠 **Semantic encoding** (transmit only meaningful data)
-* 🔐 **AES encryption** for secure communication
-* 🌐 **Cloud-based monitoring dashboard**
-* ⚡ **Low latency & bandwidth-efficient communication**
-* 📊 Real-time metrics:
-
-  * Detection status
-  * Confidence score
-  * Latency
-  * Packet size comparison
-
----
-
-## 📁 Project Structure
-
-```
-├── config/
-│   ├── crypto_utils.py
-│   └── settings.py
-│
-├── edge/
-│   ├── detection.py
-│   ├── semantic_encoder.py
-│   └── edge_main.py
-│
-├── server/
-│   └── app.py
-│
-├── models/
-│   └── yolov8n.pt
-│
-├── requirements.txt
-├── Procfile
-└── README.md
-```
-
----
-
-## 🛠️ Tech Stack
-
-* Python
-* Flask (Backend API)
-* OpenCV (Video Processing)
-* Ultralytics YOLOv8 (Edge AI)
-* AES Encryption (Security)
-* HTML + JS (Dashboard)
-
----
-
-## 🚀 Getting Started (Local Setup)
-
-### 1️⃣ Clone the repository
-
-```
-git clone <your-repo-link>
-cd Edge-AI-based-secure-semantic-communication-system
-```
-
-### 2️⃣ Create virtual environment
-
-```
-python -m venv venv
-venv\Scripts\activate   # Windows
-```
-
-### 3️⃣ Install dependencies
+Install dependencies:
 
 ```
 pip install -r requirements.txt
@@ -111,21 +33,27 @@ pip install -r requirements.txt
 
 ---
 
-## ▶️ Run the System
+## ▶️ How to Run (IMPORTANT)
 
-### Start Server
+You must run **both server and edge separately**.
+
+### 1. Start Server (Terminal 1)
 
 ```
 python -m server.app
 ```
 
-### Start Edge Device
+---
+
+### 2. Start Edge Device (Terminal 2)
 
 ```
 python -m edge.edge_main
 ```
 
-Open dashboard:
+---
+
+### 3. Open Dashboard
 
 ```
 http://127.0.0.1:5000
@@ -133,77 +61,46 @@ http://127.0.0.1:5000
 
 ---
 
-## 🌐 Deployment (Railway)
+## 🌐 Deployment
 
-1. Push code to GitHub
-2. Connect repo to Railway
-3. Ensure files:
+Backend is deployed using Railway.
 
-   * `requirements.txt`
-   * `Procfile`
-
-### Procfile
+After deployment, update URL inside edge code:
 
 ```
-web: python -m server.app
+url = "https://your-railway-url.up.railway.app/data"
 ```
 
-### After deployment:
-
-* Update edge URL:
+Then run only:
 
 ```
-https://your-app.up.railway.app/data
+python -m edge.edge_main
 ```
+
+Dashboard will be available online.
 
 ---
 
-## 📊 Performance Highlights
+## 📊 Output
 
-| Metric          | Value          |
-| --------------- | -------------- |
-| Raw Frame Size  | ~80–200 KB     |
-| Semantic Packet | ~150–300 bytes |
-| Data Reduction  | ~500x – 1000x  |
-| Latency         | ~0.1 sec       |
+Dashboard shows:
 
----
-
-## ⚠️ Limitations
-
-* Single-class detection (human only)
-* Simulated environment (not full disaster network)
-* Requires active internet connection
+* Human detected / not detected
+* Confidence score
+* Latency
+* Raw vs semantic data size
 
 ---
 
-## 🔮 Future Scope
+## ⚠️ Notes
 
-* Multi-object detection (fire, vehicles, hazards)
-* Raspberry Pi deployment (true edge hardware)
-* MQTT / LoRa integration
-* Real disaster network simulation
-* AI-based semantic compression
-
----
-
-## 🎯 Applications
-
-* Disaster response systems
-* Smart city surveillance
-* Defense & security monitoring
-* IoT-based emergency communication
+* YOLO runs only on edge device (not on server)
+* Server only receives and displays data
+* Requires internet when using deployed backend
 
 ---
 
 ## 👨‍💻 Authors
 
 * Adarsh Sharma
-* Taarini Mishra
-* Vaibhav Katariya
-
----
-
-## 📜 License
-
-This project is for academic and research purposes.
+* Team Members
