@@ -6,7 +6,7 @@ from edge.detection import detect
 from edge.semantic_encoder import create_semantic_packet
 from config.crypto_utils import encrypt_data
 
-SERVER_URL = "http://127.0.0.1:5000/data"
+SERVER_URL = "https://melodious-rebirth-production.up.railway.app/"
 
 cap = cv2.VideoCapture(0)
 
