@@ -100,8 +100,3 @@ Dashboard shows:
 * Requires internet when using deployed backend
 
 ---
-
-## 👨‍💻 Authors
-
-* Adarsh Sharma
-* Team Members
