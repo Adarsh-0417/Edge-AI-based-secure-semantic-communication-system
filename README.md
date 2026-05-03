@@ -6,7 +6,7 @@ Instead of transmitting raw images or video streams, this system performs on-dev
 
 # 🧠 Key Idea
 
-Transmit meaning, not data.
+Transmit meaning, not data. 
 
 Traditional systems send raw multimedia → high bandwidth → high latency
 This system sends semantic insights → low bandwidth → fast response
